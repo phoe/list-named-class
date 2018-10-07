@@ -56,6 +56,18 @@ LIST-NAMED-CLASS> (defmethod foo ((bar string) (baz (bar baz))) :nook)
 
 LIST-NAMED-CLASS> (foo "a" (make-instance '(bar baz)))
 :NOOK
+
+LIST-NAMED-CLASS> (defclass (parent) () ())
+#<LIST-NAMED-CLASS (PARENT)>
+
+LIST-NAMED-CLASS> (defclass (child) ((parent)) ())
+#<LIST-NAMED-CLASS (CHILD)>
+
+LIST-NAMED-CLASS> (defclass parent-2 () ())
+#<STANDARD-CLASS LIST-NAMED-CLASS::PARENT-2>
+
+LIST-NAMED-CLASS> (defclass child-2 ((parent) parent-2) ())
+#<LIST-NAMED-CLASS CHILD-2>
 ```
 
 ## Usage

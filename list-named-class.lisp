@@ -63,22 +63,41 @@
       (setf (cl:find-class name errorp environment) new-value)
       (setf (find-list-named-class name errorp) new-value)))
 
+(defun %defclass-superclasses (superclasses)
+  (let ((superclasses (copy-list superclasses)))
+    (loop with gensym = (gensym)
+          for i from 0 below (length superclasses)
+          for superclass in superclasses
+          if (listp superclass)
+            do (setf (elt superclasses i) gensym)
+            and collect (cons gensym superclass) into result
+            and do (setf gensym (gensym))
+          finally (return (values superclasses result)))))
+
 (defmacro defclass (name direct-superclasses direct-slots &rest options)
-  (if (consp name)
+  (if (or (consp name) (some #'consp direct-superclasses))
       (let ((gensym (gensym)))
-        `(unwind-protect
-              (progn (setf (find-class ',gensym)
-                           (find-list-named-class ',name nil))
-                     (cl:defclass ,gensym (,@direct-superclasses
-                                           list-named-instance)
-                       ,direct-slots
-                       (:metaclass list-named-class)
-                       ,@options)
-                     (setf (find-list-named-class ',name) (find-class ',gensym))
-                     (find-class ',gensym))
-           (let ((class (find-class ',gensym)))
-             (setf (find-class ',gensym nil) nil)
-             (setf (class-name class) ',name))))
+        (multiple-value-bind (superclasses alist)
+            (%defclass-superclasses direct-superclasses)
+          `(unwind-protect
+                (progn (setf (find-class ',gensym)
+                             (find-class ',name nil)
+                             ,@(mappend (lambda (x)
+                                          `((find-class ',(car x))
+                                            (find-class ',(cdr x))))
+                                        alist))
+                       (cl:defclass ,gensym (,@superclasses
+                                             list-named-instance)
+                         ,direct-slots
+                         (:metaclass list-named-class)
+                         ,@options)
+                       (setf (find-class ',name) (find-class ',gensym))
+                       (find-class ',gensym))
+             (let ((class (find-class ',gensym)))
+               (setf (find-class ',gensym) nil
+                     ,@(mappend (lambda (x) `((find-class ',(car x)) nil))
+                                alist)
+                     (class-name class) ',name)))))
       `(cl:defclass ,name ,direct-superclasses ,direct-slots ,@options)))
 
 (defun %list-named-types (lambda-list)
