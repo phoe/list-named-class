@@ -8,4 +8,5 @@
   :serial t
   :depends-on (#:alexandria
                #:closer-mop)
-  :components ((:file "list-named-class")))
+  :components ((:file "list-named-class")
+               (:file "swank")))
