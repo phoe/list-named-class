@@ -33,6 +33,8 @@
 
 (cl:defmethod validate-superclass ((c list-named-class) (s standard-class)) t)
 
+(cl:defmethod validate-superclass ((c standard-class) (s list-named-class)) t)
+
 (defvar *list-named-classes* (make-hash-table :test #'equal))
 
 (defun find-list-named-class (name &optional (errorp t))
@@ -87,9 +89,10 @@
                                             (find-class ',(cdr x))))
                                         alist))
                        (cl:defclass ,gensym (,@superclasses
-                                             list-named-instance)
+                                             ,@(when (consp name)
+                                                 `(list-named-instance)))
                          ,direct-slots
-                         (:metaclass list-named-class)
+                         ,@(when (consp name) `((:metaclass list-named-class)))
                          ,@options)
                        (setf (find-class ',name) (find-class ',gensym))
                        (find-class ',gensym))

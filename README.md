@@ -67,7 +67,7 @@ LIST-NAMED-CLASS> (defclass parent-2 () ())
 #<STANDARD-CLASS LIST-NAMED-CLASS::PARENT-2>
 
 LIST-NAMED-CLASS> (defclass child-2 ((parent) parent-2) ())
-#<LIST-NAMED-CLASS CHILD-2>
+#<STANDARD-CLASS CHILD-2>
 ```
 
 ## Usage
