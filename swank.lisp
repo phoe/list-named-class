@@ -1,5 +1,5 @@
 ;;;; swank.lisp
-!
+
 #+swank
 (in-package #:swank)
 
