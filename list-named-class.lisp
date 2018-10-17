@@ -92,8 +92,10 @@
                                              ,@(when (consp name)
                                                  `(list-named-instance)))
                          ,direct-slots
-                         ,@(when (consp name) `((:metaclass list-named-class)))
-                         ,@options)
+                         ,@(when (consp name)
+                             (or `(,(find :metaclass options :key #'car))
+                                 `((:metaclass list-named-class))))
+                         ,@(remove :metaclass options :key #'car))
                        (setf (find-class ',name) (find-class ',gensym))
                        (find-class ',gensym))
              (let ((class (find-class ',gensym)))
