@@ -10,3 +10,13 @@
                #:closer-mop)
   :components ((:file "list-named-class")
                (:file "swank")))
+
+(asdf:defsystem #:list-named-class/protest
+  :description "LIST-NAMED-CLASS with PROTEST integration"
+  :author "Michał \"phoe\" Herda <phoe@disroot.org>"
+  :license "MIT"
+  :version "0.1"
+  :serial t
+  :depends-on (#:list-named-class
+               #:protest/base)
+  :components ((:file "protest")))
