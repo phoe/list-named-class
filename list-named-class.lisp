@@ -17,7 +17,8 @@
     (handler-case (prin1 (class-name (class-of object)) stream)
       (error () (princ "<error while printing>" stream)))))
 
-(cl:defclass list-named-class (list-named-object standard-class) ())
+(cl:defclass list-named-class (list-named-object standard-class)
+  ((%name :accessor class-name :initform nil)))
 
 (cl:defmethod print-object ((object list-named-class) stream)
   (print-unreadable-object (object stream :type t :identity nil)
