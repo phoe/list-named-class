@@ -58,7 +58,7 @@
   (unwind-protect
        (progn (defclass #1=(#:foo #:bar) () ())
               (defgeneric frob (x)
-                (:method (x) (declare (ignore x)) 42))
+                (:method (x) 42))
               (is (= (eval '(frob (make-instance '#1#))) 42)))
     (setf (find-class '#1#) nil)
     (fmakunbound 'frob)))
@@ -67,7 +67,7 @@
   (unwind-protect
        (progn (defclass #1=(#:foo #:bar) () ())
               (defgeneric frob (x)
-                (:method ((x #1#)) (declare (ignore x)) 42))
+                (:method ((x #1#)) 42))
               (is (= (eval '(frob (make-instance '#1#))) 42)))
     (setf (find-class '#1#) nil)
     (fmakunbound 'frob)))
@@ -76,7 +76,7 @@
   (unwind-protect
        (progn (defclass #1=(#:foo #:bar) () ())
               (defgeneric frob (x))
-              (defmethod frob (x) (declare (ignore x)) 42)
+              (defmethod frob (x) 42)
               (is (= (eval '(frob (make-instance '#1#))) 42)))
     (setf (find-class '#1#) nil)
     (fmakunbound 'frob)))
@@ -85,7 +85,7 @@
   (unwind-protect
        (progn (defclass #1=(#:foo #:bar) () ())
               (defgeneric frob (x))
-              (defmethod frob ((x #1#)) (declare (ignore x)) 42)
+              (defmethod frob ((x #1#)) 42)
               (is (= (eval '(frob (make-instance '#1#))) 42)))
     (setf (find-class '#1#) nil)
     (fmakunbound 'frob)))
@@ -95,7 +95,7 @@
        (progn (defclass #1=(#:foo #:bar) () ())
               (defclass #2=#:baz () ())
               (defgeneric frob (x y))
-              (defmethod frob ((x #1#) (y #2#)) (declare (ignore x)) 42)
+              (defmethod frob ((x #1#) (y #2#)) 42)
               (is (= (eval '(frob (make-instance '#1#) (make-instance '#2#)))
                      42)))
     (setf (find-class '#1#) nil)
@@ -107,7 +107,7 @@
        (progn (defclass #1=(#:foo #:bar) () ())
               (defclass #2=#:baz () ())
               (defgeneric frob (x y))
-              (defmethod frob ((x #2#) (y #1#)) (declare (ignore x)) 42)
+              (defmethod frob ((x #2#) (y #1#)) 42)
               (is (= (eval '(frob (make-instance '#2#) (make-instance '#1#)))
                      42)))
     (setf (find-class '#1#) nil)
