@@ -5,16 +5,7 @@ In ANSI Common Lisp, all classes must be named by symbols.
 This system makes it possible to name classes by lists of symbols instead, using
 only standard MOP wizardry.
 
-## Prerequisites
-
-Your implementation must **not** assume that class names must be symbols. In
-particular, `CLASS-NAME` may return any Lisp data and `SETF CLASS-NAME` may
-accept any Lisp data as the newly set value. See
-http://metamodular.com/CLOS-MOP/class-name.html and
-http://metamodular.com/CLOS-MOP/setf-class-name.htm
-
-In practice: works on SBCL (see below for details), doesn't work on CCL.
-Untested everywhere else.
+Tested on SBCL and CCL.
 
 ## Example
 
@@ -86,67 +77,6 @@ All classes named after lists are subclasses of class `LIST-NAMED-CLASS`.
 
 All instances of classes named after lists are subclasses of class
 `LIST-NAMED-INSTANCE`.
-
-## SBCL patch
-
-SBCL has a bug that prevents `DEFCLASS` with accessors in slot definitions from
-working correctly.
-See [this](https://bugs.launchpad.net/sbcl/+bug/1796568) for details.
-
-Add the following to your SBCL init script to work around this bug for the time
-being.
-
-```common-lisp
-#+sbcl
-(in-package #:sb-pcl)
-
-#+sbcl
-(progn
-  (defmethod add-reader-method ((class slot-class) generic-function slot-name slot-documentation source-location)
-    (add-method generic-function
-                (make-a-method 'standard-reader-method
-                               ()
-                               (list (let ((name (class-name class)))
-                                       (if (and name (symbolp name)) name 'object)))
-                               (list class)
-                               (make-reader-method-function class slot-name)
-                               (or slot-documentation "automatically generated reader method")
-                               :slot-name slot-name
-                               :object-class class
-                               :method-class-function #'reader-method-class
-                               'source source-location)))
-  (defmethod add-writer-method ((class slot-class) generic-function slot-name slot-documentation source-location)
-    (add-method generic-function
-                (make-a-method 'standard-writer-method
-                               ()
-                               (list 'new-value
-                                     (let ((name (class-name class)))
-                                       (if (and name (symbolp name)) name 'object)))
-                               (list *the-class-t* class)
-                               (make-writer-method-function class slot-name)
-                               (or slot-documentation "automatically generated writer method")
-                               :slot-name slot-name
-                               :object-class class
-                               :method-class-function #'writer-method-class
-                               'source source-location)))
-  (defmethod add-boundp-method ((class slot-class) generic-function slot-name slot-documentation source-location)
-    (add-method generic-function
-                (make-a-method (constantly (find-class 'standard-boundp-method))
-                               class
-                               ()
-                               (list (let ((name (class-name class)))
-                                       (if (and name (symbolp name)) name 'object)))
-                               (list class)
-                               (make-boundp-method-function class slot-name)
-                               (or slot-documentation "automatically generated boundp method")
-                               :slot-name slot-name
-                               'source source-location))))
-
-```
-
-## TODO
-
-Automated tests. These will be handy when testing on new implementations.
 
 ## License
 
