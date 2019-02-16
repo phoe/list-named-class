@@ -5,7 +5,7 @@ In ANSI Common Lisp, all classes must be named by symbols.
 This system makes it possible to name classes by lists of symbols instead, using
 only standard MOP wizardry.
 
-Tested on SBCL and CCL.
+Tested on SBCL, ECL and CCL.
 
 ## Example
 
